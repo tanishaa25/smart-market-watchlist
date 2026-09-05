@@ -1,4 +1,9 @@
-const BASE = "/api";
+// In local dev, Vite's dev-server proxy forwards "/api" to the backend
+// (see vite.config.js) — no configuration needed. In a production build
+// (no dev server, no proxy), set VITE_API_BASE_URL at build time to the
+// real backend URL (e.g. https://your-backend.onrender.com/api) — see
+// deployment notes in README.md.
+const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
 const TOKEN_KEY = "watchlist_auth_token";
 const EMAIL_KEY = "watchlist_user_email";

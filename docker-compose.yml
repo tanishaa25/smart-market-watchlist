@@ -1,0 +1,28 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in a .env file or your shell before running}
+      - FINNHUB_API_KEY=${FINNHUB_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase-key.json
+    volumes:
+      # Mount your real Firebase service-account key at this exact path
+      # (see backend/.env.example for how to generate one) — never baked
+      # into the image itself.
+      - ${FIREBASE_KEY_PATH:-./backend/firebase-key.json}:/secrets/firebase-key.json:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
